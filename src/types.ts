@@ -177,12 +177,14 @@ export type GenerationStatus = "completed" | "failed";
  * - generation_id: the ID of the generation.
  * - status: the status of generation, either 'completed' or 'failed'.
  * - generated_count: number of generated flashcards.
+ * - generation_duration: duration of the generation.
  * - flashcards_proposals: an array of FlashcardProposalDTO.
  */
 export interface GenerationResponseDTO {
   generation_id: number;
   status: GenerationStatus;
   generated_count: number;
+  generation_duration: number;
   flashcards_proposals: FlashcardProposalDTO[];
 }
 /* --- End GenerationResponseDTO documentation --- */
@@ -196,6 +198,7 @@ export interface GenerationResponseDTO {
  * - hash: a string reflecting the source_text_hash.
  * - model: the generation model used.
  * - generated_count: count of flashcards generated.
+ * - generation_duration: duration of the generation.
  * - created_at: creation timestamp.
  * - updated_at: last update timestamp.
  */
@@ -204,6 +207,7 @@ export interface GenerationListItemDTO {
   hash: string; // reflects source_text_hash
   model: GenerationRow["model"];
   generated_count: GenerationRow["generated_count"];
+  generation_duration: GenerationRow["generation_duration"];
   created_at: GenerationRow["created_at"];
   updated_at: GenerationRow["updated_at"];
 }
@@ -233,6 +237,7 @@ export interface GenerationHistoryResponseDTO {
  * - source_text_length: length of the source text.
  * - model: the generation model used.
  * - generated_count: count of flashcards generated.
+ * - generation_duration: duration of the generation.
  * - flashcards: array of flashcard list items.
  * - error_logs: array of generation error logs.
  */
@@ -242,6 +247,7 @@ export interface GenerationDetailsDTO {
   source_text_length: GenerationRow["source_text_length"];
   model: GenerationRow["model"];
   generated_count: GenerationRow["generated_count"];
+  generation_duration: GenerationRow["generation_duration"];
   flashcards: FlashcardListItemDTO[];
   error_logs: GenerationErrorLogDTO[];
 }
