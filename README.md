@@ -77,4 +77,4 @@ The project is in the early stages of development with a focus on creating a Min
 
 ## License
 
-This project is licensed under the MIT License. 
+This project is licensed under the MIT License.

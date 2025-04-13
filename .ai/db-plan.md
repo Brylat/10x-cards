@@ -1,4 +1,4 @@
-/* Schemat bazy danych PostgreSQL - 10xCards */
+/_ Schemat bazy danych PostgreSQL - 10xCards _/
 
 # Schemat bazy danych PostgreSQL - 10xCards
 
@@ -7,16 +7,18 @@
 ### a. Tabela `flashcards`
 
 Kolumny:
+
 - `id` SERIAL PRIMARY KEY
 - `front` VARCHAR(200) NOT NULL
 - `back` VARCHAR(500) NOT NULL
 - `source` VARCHAR(20) NOT NULL CHECK (source IN ('ai-full', 'ai-edited', 'manual'))
 - `generation_id` INTEGER REFERENCES generations(id) ON DELETE CASCADE
-- `user_id` UUID REFERENCES auth.users(id) ON DELETE CASCADE  -- (użytkownicy zarządzani przez Supabase Auth)
+- `user_id` UUID REFERENCES auth.users(id) ON DELETE CASCADE -- (użytkownicy zarządzani przez Supabase Auth)
 - `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-- `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP  -- aktualizowany przez trigger
+- `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP -- aktualizowany przez trigger
 
 Indeksy:
+
 - Indeks na kolumnie `user_id`
 - Indeks na kolumnie `generation_id`
 - Indeks na kolumnie `created_at`
@@ -24,12 +26,13 @@ Indeksy:
 ### b. Tabela `generations`
 
 Kolumny:
+
 - `id` SERIAL PRIMARY KEY
 - `hash` TEXT NOT NULL
-- `source_text_length` INTEGER NOT NULL CHECK (between 1000 10000)  -- długość przetwarzanego tekstu
+- `source_text_length` INTEGER NOT NULL CHECK (between 1000 10000) -- długość przetwarzanego tekstu
 - `source_text_hash` VARCHAR NOT NULL
 - `model` TEXT NOT NULL
-- `generated_count` INTEGER NOT NULL            -- liczba wygenerowanych fiszek
+- `generated_count` INTEGER NOT NULL -- liczba wygenerowanych fiszek
 - `accepted_count_without_edit` INTEGER NULLABLE
 - `accepted_count_with_edit` INTEGER NULLABLE
 - `generation_duration` INTEGER NOT NULL
@@ -38,17 +41,19 @@ Kolumny:
 - `user_id` UUID REFERENCES auth.users(id) ON DELETE CASCADE
 
 Indeksy:
+
 - Indeks na kolumnie `created_at`
 - Indeks na kolumnie `user_id`
 
 ### c. Tabela `generations_error_logs`
 
 Kolumny:
+
 - `id` SERIAL PRIMARY KEY
-- `error_message` VARCHAR(1000) NOT NULL  -- ograniczenie długości komunikatu błędu
+- `error_message` VARCHAR(1000) NOT NULL -- ograniczenie długości komunikatu błędu
 - `error_code` VARCHAR(100) NOT NULL
 - `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-- `source_text_length` INTEGER NOT NULL CHECK (between 1000 10000)  -- długość przetwarzanego tekstu
+- `source_text_length` INTEGER NOT NULL CHECK (between 1000 10000) -- długość przetwarzanego tekstu
 - `source_text_hash` VARCHAR NOT NULL
 - `model` TEXT NOT NULL
 - `user_id` UUID REFERENCES auth.users(id)
@@ -89,4 +94,4 @@ CREATE POLICY "Users can access their own flashcards" ON flashcards
 ## 6. Dodatkowe uwagi
 
 - Użycie CHECK dla kolumny `source` gwarantuje, że dozwolone są tylko wartości: 'ai-full', 'ai-edited' oraz 'manual'.
-- Tabela użytkowników korzysta z wbudowanego systemu Supabase Auth i nie wymaga dodatkowych modyfikacji w schemacie. 
+- Tabela użytkowników korzysta z wbudowanego systemu Supabase Auth i nie wymaga dodatkowych modyfikacji w schemacie.
