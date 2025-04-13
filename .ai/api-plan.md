@@ -138,7 +138,7 @@
        "generation_id": 10,
        "status": "completed",
        "generated_count": 5,
-       "flashcardsProposals": [
+       "flashcards_proposals": [
          {
            "id": 1,
            "front": "Generated front text",

@@ -177,13 +177,13 @@ export type GenerationStatus = "completed" | "failed";
  * - generation_id: the ID of the generation.
  * - status: the status of generation, either 'completed' or 'failed'.
  * - generated_count: number of generated flashcards.
- * - flashcardsProposals: an array of FlashcardProposalDTO.
+ * - flashcards_proposals: an array of FlashcardProposalDTO.
  */
 export interface GenerationResponseDTO {
   generation_id: number;
   status: GenerationStatus;
   generated_count: number;
-  flashcardsProposals: FlashcardProposalDTO[];
+  flashcards_proposals: FlashcardProposalDTO[];
 }
 /* --- End GenerationResponseDTO documentation --- */
 
