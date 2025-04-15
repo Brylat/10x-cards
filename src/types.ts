@@ -35,7 +35,7 @@ export type GenerationErrorLogRow = Database["public"]["Tables"]["generations_er
 /**
  * Allowed flashcard source values.
  */
-export type FlashcardSource = "manual" | "ai_full" | "ai_edited";
+export type FlashcardSource = "manual" | "ai-full" | "ai-edited";
 /* --- End FlashcardSource documentation --- */
 
 /* --- Begin PaginationDTO documentation --- */

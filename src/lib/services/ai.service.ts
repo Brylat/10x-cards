@@ -15,7 +15,7 @@ export class MockAIService implements AIService {
     return Array.from({ length: cardCount }, (_, index) => ({
       front: `Mock Question ${index + 1}`,
       back: `Mock Answer ${index + 1}`,
-      source: "ai_full",
+      source: "ai-full",
     }));
   }
 }
