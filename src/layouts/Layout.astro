@@ -1,6 +1,6 @@
 ---
 import "../styles/global.css";
-
+import { Toaster } from "sonner";
 interface Props {
   title?: string;
 }
@@ -19,6 +19,7 @@ const { title = "10x Astro Starter" } = Astro.props;
   </head>
   <body>
     <slot />
+    <Toaster client:only="react" richColors position="top-right" />
   </body>
 </html>
 
