@@ -1,17 +1,52 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { GenerationResponseDTO, GenerationStatus } from "../../types";
+import { OpenRouterService } from "./openrouter.service";
 import crypto from "crypto";
-import type { AIService } from "./ai.service";
-import { MockAIService } from "./ai.service";
 
 export class GenerationService {
-  private aiService: AIService;
+  private aiService: OpenRouterService;
+  private readonly MODEL = "openai/gpt-4o-mini"; // Define model at class level for reuse
 
-  constructor(
-    private readonly supabase: SupabaseClient,
-    aiService?: AIService
-  ) {
-    this.aiService = aiService || new MockAIService();
+  constructor(private readonly supabase: SupabaseClient) {
+    this.aiService = new OpenRouterService(this.MODEL);
+
+    // Set system message for flashcard generation
+    this.aiService.setSystemMessage(
+      "You are an AI assistant specialized in creating high-quality flashcards from provided text. " +
+        "Generate concise, clear, and effective flashcards that capture key concepts and knowledge. " +
+        "Each flashcard should have a front (question/prompt) and back (answer/explanation). " +
+        "Focus on important facts, definitions, concepts, and relationships."
+    );
+
+    // Set response format for array of flashcards
+    this.aiService.setResponseFormat({
+      name: "flashcards",
+      schema: {
+        type: "object",
+        properties: {
+          flashcards: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                front: { type: "string" },
+                back: { type: "string" },
+              },
+              required: ["front", "back"],
+              additionalProperties: false,
+            },
+          },
+        },
+        required: ["flashcards"],
+        additionalProperties: false,
+      },
+    });
+
+    // Set model parameters for optimal flashcard generation
+    this.aiService.setModelParameters({
+      temperature: 0.7,
+      top_p: 0.9,
+    });
   }
 
   async createGeneration(sourceText: string, userId: string): Promise<GenerationResponseDTO> {
@@ -25,9 +60,9 @@ export class GenerationService {
           user_id: userId,
           source_text_length: sourceText.length,
           source_text_hash: this.generateHash(sourceText),
-          model: "gpt-4-mock", // Using mock model name
+          model: this.MODEL, // Use the same model constant
           generated_count: 0,
-          generation_duration: 0, // Initial duration
+          generation_duration: 0,
         })
         .select()
         .single();
@@ -38,7 +73,10 @@ export class GenerationService {
 
       try {
         // 2. Generate flashcards using AI service
-        const flashcards = await this.aiService.generateFlashcards(sourceText);
+        const prompt = `${sourceText}`;
+
+        const response = await this.aiService.sendChatMessage(prompt);
+        const { flashcards } = JSON.parse(response);
 
         const generationDuration = Date.now() - startTime;
 
