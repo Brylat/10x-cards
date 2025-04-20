@@ -41,6 +41,10 @@ Użytkownicy często napotykają trudności związane z ręcznym tworzeniem wyso
   - Użytkownik może założyć konto używając adresu e-mail i hasła.
   - System waliduje unikalność e-maila oraz siłę hasła.
   - Użytkownik może się poprawnie zalogować i mieć dostęp tylko do swoich danych.
+  - Zalogowanie jest wymagana aby korzystać a aplikacji
+  - Użytkownik powinien móc zresetować / odzyskać swoje gasło
+  - Do logowania i ejestracji służą dedykowane strony
+  - Zalogowany użytkownik ma przycisk do wylogowania w prawym górnym rogu
 
 - ID: US-002
   Tytuł: Generowanie fiszek przez AI
