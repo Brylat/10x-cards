@@ -2,6 +2,14 @@
 import NonAuthLayout from "../layouts/NonAuthLayout.astro";
 import { LoginForm } from "../components/auth/LoginForm";
 import { Card } from "@/components/ui/card";
+
+// Wyłącz prerenderowanie - renderuj na serwerze
+export const prerender = false;
+
+// Sprawdź, czy użytkownik jest już zalogowany
+if (Astro.locals.user) {
+  return Astro.redirect("/generate");
+}
 ---
 
 <NonAuthLayout title="Logowanie - 10x Cards">

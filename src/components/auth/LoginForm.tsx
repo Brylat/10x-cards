@@ -41,16 +41,47 @@ export function LoginForm() {
     setIsLoading(true);
 
     try {
-      // Placeholder for actual API call
-      // In real implementation, this would call the login endpoint
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        if (data.details) {
+          // Jeśli są szczegółowe błędy walidacji
+          const newErrors: typeof errors = {};
+
+          data.details.forEach((error: { path: string[]; message: string }) => {
+            if (error.path[0] === "email") {
+              newErrors.email = error.message;
+            } else if (error.path[0] === "password") {
+              newErrors.password = error.message;
+            }
+          });
+
+          setErrors(newErrors);
+        } else {
+          // Ogólny błąd
+          setErrors({
+            general: data.error || "Nie udało się zalogować. Sprawdź dane logowania i spróbuj ponownie.",
+          });
+        }
+        toast.error("Błąd logowania");
+        return;
+      }
 
       toast.success("Pomyślnie zalogowano");
-      // Here would be code to handle successful login
+      // Przekierowanie po udanym logowaniu
+      window.location.href = "/generate";
     } catch (error) {
       console.error("Login error:", error);
       setErrors({
-        general: "Nie udało się zalogować. Sprawdź dane logowania i spróbuj ponownie.",
+        general: "Nie udało się zalogować. Sprawdź połączenie z internetem i spróbuj ponownie.",
       });
       toast.error("Błąd logowania");
     } finally {

@@ -1,17 +1,40 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 export function TopMenu() {
   const [currentPath, setCurrentPath] = useState("/");
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   useEffect(() => {
     setCurrentPath(window.location.pathname);
   }, []);
 
   const handleLogout = async () => {
-    // Placeholder for actual logout functionality
-    // This will be implemented later
-    console.log("Logout clicked");
+    try {
+      setIsLoggingOut(true);
+
+      const response = await fetch("/api/auth/logout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Błąd podczas wylogowywania");
+      }
+
+      toast.success("Wylogowano pomyślnie");
+      // Przekieruj do strony logowania
+      window.location.href = "/login";
+    } catch (error) {
+      console.error("Logout error:", error);
+      toast.error("Nie udało się wylogować. Spróbuj ponownie.");
+    } finally {
+      setIsLoggingOut(false);
+    }
   };
 
   return (
@@ -37,9 +60,10 @@ export function TopMenu() {
             <Button
               variant="ghost"
               onClick={handleLogout}
+              disabled={isLoggingOut}
               className="text-base text-red-400 hover:text-red-300 hover:bg-red-950/40"
             >
-              Wyloguj
+              {isLoggingOut ? "Wylogowywanie..." : "Wyloguj"}
             </Button>
           </div>
         </nav>

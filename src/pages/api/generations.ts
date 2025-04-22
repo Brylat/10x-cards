@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 import { z } from "zod";
 import { GenerationService } from "../../lib/services/generation.service";
-import { supabaseClient, DEFAULT_USER_ID } from "../../db/supabase.client";
+import { createSupabaseServerInstance } from "../../db/supabase.client";
 
 export const prerender = false;
 
@@ -13,8 +13,22 @@ const requestGenerationSchema = z.object({
     .max(10000, "Text cannot exceed 10000 characters"),
 });
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, cookies, locals }) => {
   try {
+    // Sprawdź, czy użytkownik jest zalogowany
+    if (!locals.user) {
+      return new Response(
+        JSON.stringify({
+          error: "Authentication required",
+          message: "You must be logged in to generate flashcards",
+        }),
+        {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
     // 1. Input validation
     const body = await request.json();
     const validationResult = requestGenerationSchema.safeParse(body);
@@ -34,9 +48,12 @@ export const POST: APIRoute = async ({ request }) => {
 
     const { source_text } = validationResult.data;
 
+    // Inicjalizacja klienta Supabase z obsługą ciasteczek
+    const supabase = createSupabaseServerInstance({ cookies, headers: request.headers });
+
     // 2. Process generation request
-    const generationService = new GenerationService(supabaseClient);
-    const result = await generationService.createGeneration(source_text, DEFAULT_USER_ID);
+    const generationService = new GenerationService(supabase);
+    const result = await generationService.createGeneration(source_text, locals.user.id);
 
     return new Response(JSON.stringify(result), {
       status: 201,

@@ -2,6 +2,15 @@
 import AuthLayout from "../layouts/AuthLayout.astro";
 import { GenerateFlashcardsView } from "../components/generate/GenerateFlashcardsView";
 import { Card } from "@/components/ui/card";
+
+// Wyłącz prerenderowanie - renderuj na serwerze
+export const prerender = false;
+
+// Sprawdź, czy użytkownik jest zalogowany - middleware powinno obsłużyć przekierowanie,
+// ale dodatkowa warstwa bezpieczeństwa nie zaszkodzi
+if (!Astro.locals.user) {
+  return Astro.redirect("/login");
+}
 ---
 
 <AuthLayout title="Generate Flashcards - 10x Cards">
