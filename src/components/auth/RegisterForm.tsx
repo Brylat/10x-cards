@@ -53,16 +53,50 @@ export function RegisterForm() {
     setIsLoading(true);
 
     try {
-      // Placeholder for actual API call
-      // In real implementation, this would call the registration endpoint
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        if (data.details) {
+          // Handle detailed validation errors
+          const newErrors: typeof errors = {};
+
+          data.details.forEach((error: { path: string[]; message: string }) => {
+            if (error.path[0] === "email") {
+              newErrors.email = error.message;
+            } else if (error.path[0] === "password") {
+              newErrors.password = error.message;
+            }
+          });
+
+          setErrors(newErrors);
+        } else {
+          // General error
+          setErrors({
+            general: data.error || "Nie udało się utworzyć konta. Spróbuj ponownie lub użyj innego adresu email.",
+          });
+        }
+        toast.error("Błąd rejestracji");
+        return;
+      }
 
       toast.success("Konto zostało utworzone");
-      // Here would be code to handle successful registration
+
+      // Add delay before redirect to allow toast to be visible
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 2000); // 2 seconds delay
     } catch (error) {
       console.error("Registration error:", error);
       setErrors({
-        general: "Nie udało się utworzyć konta. Spróbuj ponownie lub użyj innego adresu email.",
+        general: "Nie udało się utworzyć konta. Sprawdź połączenie z internetem i spróbuj ponownie.",
       });
       toast.error("Błąd rejestracji");
     } finally {

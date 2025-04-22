@@ -2,6 +2,14 @@
 import NonAuthLayout from "../layouts/NonAuthLayout.astro";
 import { RegisterForm } from "../components/auth/RegisterForm";
 import { Card } from "@/components/ui/card";
+
+// Disable prerendering - render on server
+export const prerender = false;
+
+// Check if the user is already logged in
+if (Astro.locals.user) {
+  return Astro.redirect("/generate");
+}
 ---
 
 <NonAuthLayout title="Rejestracja - 10x Cards">
