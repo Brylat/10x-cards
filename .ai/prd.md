@@ -45,6 +45,9 @@ Użytkownicy często napotykają trudności związane z ręcznym tworzeniem wyso
   - Użytkownik powinien móc zresetować / odzyskać swoje gasło
   - Do logowania i ejestracji służą dedykowane strony
   - Zalogowany użytkownik ma przycisk do wylogowania w prawym górnym rogu
+  - Niezalogowany użytkownik jest przekierowywany na stronę logowania
+  - Zalogowany użytkownik jest przekierowywany na strone generowanie fiszek
+  - Tylko zalogowany użytkownik widzi TopMenu
 
 - ID: US-002
   Tytuł: Generowanie fiszek przez AI
