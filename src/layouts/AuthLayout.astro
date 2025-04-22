@@ -7,7 +7,7 @@ interface Props {
   title?: string;
 }
 
-const { title = "10x Astro Starter" } = Astro.props;
+const { title = "10x Cards" } = Astro.props;
 ---
 
 <!doctype html>
@@ -19,9 +19,11 @@ const { title = "10x Astro Starter" } = Astro.props;
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
   </head>
-  <body>
+  <body class="bg-gradient-to-br from-gray-900 via-blue-950 to-black min-h-screen">
     <TopMenu client:load />
-    <slot />
+    <div class="container mx-auto px-4 py-6 min-h-[calc(100vh-64px)]">
+      <slot />
+    </div>
     <Toaster client:only="react" richColors position="top-right" />
   </body>
 </html>

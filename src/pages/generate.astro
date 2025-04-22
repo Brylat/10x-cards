@@ -1,11 +1,22 @@
 ---
-import MainLayout from "../layouts/Layout.astro";
+import AuthLayout from "../layouts/AuthLayout.astro";
 import { GenerateFlashcardsView } from "../components/generate/GenerateFlashcardsView";
+import { Card } from "@/components/ui/card";
 ---
 
-<MainLayout title="Generate Flashcards">
-  <main class="container mx-auto px-4 py-8">
-    <h1 class="text-4xl font-bold mb-8">Generate Flashcards</h1>
-    <GenerateFlashcardsView client:load />
-  </main>
-</MainLayout>
+<AuthLayout title="Generate Flashcards - 10x Cards">
+  <div class="max-w-4xl mx-auto mt-8">
+    <Card className="backdrop-blur-xl bg-gradient-to-b from-white/10 to-white/5 border border-white/10 shadow-xl">
+      <div class="mb-6 pt-6 px-6">
+        <h1
+          class="text-2xl font-bold text-center bg-gradient-to-r from-blue-300 to-blue-100 text-transparent bg-clip-text"
+        >
+          Generate Flashcards
+        </h1>
+      </div>
+      <div class="px-6 pb-6">
+        <GenerateFlashcardsView client:load />
+      </div>
+    </Card>
+  </div>
+</AuthLayout>
