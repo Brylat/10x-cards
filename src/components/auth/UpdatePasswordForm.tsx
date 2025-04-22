@@ -4,22 +4,30 @@ import { CardContent, CardFooter } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 
-export function PasswordResetForm() {
-  const [email, setEmail] = useState("");
+export function UpdatePasswordForm() {
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [errors, setErrors] = useState<{
-    email?: string;
+    password?: string;
+    confirmPassword?: string;
     general?: string;
   }>({});
 
   const validateForm = () => {
     const newErrors: typeof errors = {};
 
-    if (!email) {
-      newErrors.email = "Email jest wymagany";
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = "Niepoprawny format adresu email";
+    if (!password) {
+      newErrors.password = "Hasło jest wymagane";
+    } else if (password.length < 8) {
+      newErrors.password = "Hasło musi mieć co najmniej 8 znaków";
+    }
+
+    if (!confirmPassword) {
+      newErrors.confirmPassword = "Potwierdzenie hasła jest wymagane";
+    } else if (password !== confirmPassword) {
+      newErrors.confirmPassword = "Hasła nie są identyczne";
     }
 
     setErrors(newErrors);
@@ -36,12 +44,12 @@ export function PasswordResetForm() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/auth/reset-password", {
+      const response = await fetch("/api/auth/update-password", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ password }),
       });
 
       const data = await response.json();
@@ -52,8 +60,8 @@ export function PasswordResetForm() {
           const newErrors: typeof errors = {};
 
           data.details.forEach((error: { path: string[]; message: string }) => {
-            if (error.path[0] === "email") {
-              newErrors.email = error.message;
+            if (error.path[0] === "password") {
+              newErrors.password = error.message;
             }
           });
 
@@ -61,21 +69,21 @@ export function PasswordResetForm() {
         } else {
           // Ogólny błąd
           setErrors({
-            general: data.error || "Nie udało się wysłać linku do resetowania hasła. Spróbuj ponownie później.",
+            general: data.error || "Nie udało się zaktualizować hasła. Spróbuj ponownie później.",
           });
         }
-        toast.error("Błąd resetowania hasła");
+        toast.error("Błąd aktualizacji hasła");
         return;
       }
 
       setSuccess(true);
-      toast.success("Link do resetowania hasła został wysłany");
+      toast.success("Hasło zostało pomyślnie zmienione");
     } catch (error) {
-      console.error("Password reset error:", error);
+      console.error("Update password error:", error);
       setErrors({
-        general: "Nie udało się wysłać linku do resetowania hasła. Spróbuj ponownie później.",
+        general: "Nie udało się zaktualizować hasła. Spróbuj ponownie później.",
       });
-      toast.error("Błąd resetowania hasła");
+      toast.error("Błąd aktualizacji hasła");
     } finally {
       setIsLoading(false);
     }
@@ -85,27 +93,13 @@ export function PasswordResetForm() {
     return (
       <div className="text-center py-6 space-y-4">
         <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-4 rounded-md">
-          <p className="text-lg font-medium mb-2">Email został wysłany!</p>
-          <p className="text-sm">
-            Na adres <span className="font-medium">{email}</span> wysłaliśmy link do resetowania hasła. Sprawdź swoją
-            skrzynkę odbiorczą i folder spam.
-          </p>
-        </div>
-
-        <div className="mt-6 text-gray-600 text-sm">
-          <p>Nie otrzymałeś maila?</p>
-          <Button
-            onClick={() => setSuccess(false)}
-            variant="link"
-            className="text-blue-600 hover:text-blue-800 transition-colors font-medium"
-          >
-            Spróbuj ponownie
-          </Button>
+          <p className="text-lg font-medium mb-2">Hasło zostało zmienione!</p>
+          <p className="text-sm">Możesz teraz zalogować się używając nowego hasła.</p>
         </div>
 
         <div className="mt-4">
           <a href="/login" className="text-blue-600 hover:text-blue-800 transition-colors text-sm font-medium">
-            Wróć do logowania
+            Przejdź do logowania
           </a>
         </div>
       </div>
@@ -116,9 +110,7 @@ export function PasswordResetForm() {
     <form onSubmit={handleSubmit}>
       <CardContent className="space-y-4">
         <div className="text-center mb-2">
-          <p className="text-gray-600">
-            Wprowadź adres email powiązany z Twoim kontem, a my wyślemy Ci link do resetowania hasła.
-          </p>
+          <p className="text-gray-600">Wprowadź i potwierdź nowe hasło.</p>
         </div>
 
         {errors.general && (
@@ -128,21 +120,39 @@ export function PasswordResetForm() {
         )}
 
         <div className="space-y-2">
-          <Label htmlFor="email" className="text-gray-700 font-medium">
-            Email
+          <Label htmlFor="password" className="text-gray-700 font-medium">
+            Nowe hasło
           </Label>
           <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             className={`w-full px-3 py-2 bg-gray-50 border ${
-              errors.email ? "border-red-500" : "border-gray-300"
+              errors.password ? "border-red-500" : "border-gray-300"
             } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-400`}
-            placeholder="twój@email.com"
+            placeholder="••••••••"
             disabled={isLoading}
           />
-          {errors.email && <p className="text-red-600 text-sm mt-1 font-medium">{errors.email}</p>}
+          {errors.password && <p className="text-red-600 text-sm mt-1 font-medium">{errors.password}</p>}
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="confirmPassword" className="text-gray-700 font-medium">
+            Potwierdź nowe hasło
+          </Label>
+          <input
+            id="confirmPassword"
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            className={`w-full px-3 py-2 bg-gray-50 border ${
+              errors.confirmPassword ? "border-red-500" : "border-gray-300"
+            } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-400`}
+            placeholder="••••••••"
+            disabled={isLoading}
+          />
+          {errors.confirmPassword && <p className="text-red-600 text-sm mt-1 font-medium">{errors.confirmPassword}</p>}
         </div>
       </CardContent>
 
@@ -152,7 +162,7 @@ export function PasswordResetForm() {
           className="w-full bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white font-medium py-2"
           disabled={isLoading}
         >
-          {isLoading ? "Wysyłanie..." : "Wyślij link resetujący"}
+          {isLoading ? "Aktualizowanie..." : "Ustaw nowe hasło"}
         </Button>
 
         <p className="text-center text-gray-600 text-sm">
