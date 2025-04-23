@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { LogOut } from "lucide-react";
 
 export function TopMenu() {
   const [currentPath, setCurrentPath] = useState("/");
@@ -48,9 +49,11 @@ export function TopMenu() {
               </span>
             </a>
             <Button
-              variant={currentPath === "/generate" ? "secondary" : "ghost"}
+              variant={currentPath === "/generate" ? "default" : "ghost"}
               asChild
-              className="text-base text-blue-100 hover:text-white hover:bg-blue-900/40"
+              className={`text-base hover:text-white hover:bg-blue-900/40 focus-visible:bg-blue-900/40 focus-visible:text-white ${
+                currentPath === "/generate" ? "bg-blue-800 text-white" : "text-blue-100"
+              }`}
             >
               <a href="/generate">Generate Flashcards</a>
             </Button>
@@ -61,8 +64,9 @@ export function TopMenu() {
               variant="ghost"
               onClick={handleLogout}
               disabled={isLoggingOut}
-              className="text-base text-red-400 hover:text-red-300 hover:bg-red-950/40"
+              className="text-sm text-blue-200/80 hover:text-blue-100 hover:bg-blue-900/30 focus-visible:ring-blue-500/20"
             >
+              <LogOut className="size-4 mr-1 opacity-70" />
               {isLoggingOut ? "Wylogowywanie..." : "Wyloguj"}
             </Button>
           </div>
