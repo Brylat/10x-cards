@@ -4,7 +4,7 @@ import { TextInputForm } from "./TextInputForm";
 import { FlashcardReviewList } from "./FlashcardReviewList";
 import { EditFlashcardModal } from "./EditFlashcardModal";
 import { Button } from "../ui/button";
-import { Save, Loader2 } from "lucide-react";
+import { Save, Loader2, CheckSquare } from "lucide-react";
 import { toast } from "sonner";
 
 type FlashcardWithAcceptance = FlashcardProposalDTO & {
@@ -17,6 +17,7 @@ export function GenerateFlashcardsView() {
   const [inputText, setInputText] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isSavingAll, setIsSavingAll] = useState(false);
   const [flashcardsList, setFlashcardsList] = useState<FlashcardWithAcceptance[]>([]);
   const [editingFlashcard, setEditingFlashcard] = useState<FlashcardWithAcceptance | null>(null);
 
@@ -134,6 +135,41 @@ export function GenerateFlashcardsView() {
     }
   };
 
+  const handleSaveAllFlashcards = async () => {
+    if (flashcardsList.length === 0) {
+      toast.error("No flashcards to save");
+      return;
+    }
+
+    try {
+      setIsSavingAll(true);
+      const response = await fetch("/api/flashcards", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          flashcards: flashcardsList.map(({ accepted, isEdited, ...flashcard }) => flashcard),
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to save flashcards");
+      }
+
+      toast.success(`Saved all ${flashcardsList.length} flashcards successfully`);
+      setFlashcardsList([]);
+      setInputText("");
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to save flashcards";
+      toast.error(message);
+    } finally {
+      setIsSavingAll(false);
+    }
+  };
+
   return (
     <div className="space-y-8">
       <TextInputForm
@@ -151,8 +187,19 @@ export function GenerateFlashcardsView() {
       />
 
       {flashcardsList.length > 0 && (
-        <div className="flex justify-end">
-          <Button onClick={handleSaveAccepted} disabled={!flashcardsList.some((f) => f.accepted) || isSaving}>
+        <div className="flex justify-end gap-4">
+          <Button
+            onClick={handleSaveAllFlashcards}
+            disabled={flashcardsList.length === 0 || isSavingAll || isSaving}
+            variant="outline"
+          >
+            {isSavingAll ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <CheckSquare className="h-4 w-4 mr-2" />}
+            {isSavingAll ? "Saving all..." : "Save All Flashcards"}
+          </Button>
+          <Button
+            onClick={handleSaveAccepted}
+            disabled={!flashcardsList.some((f) => f.accepted) || isSaving || isSavingAll}
+          >
             {isSaving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
             {isSaving ? "Saving..." : "Save Accepted Flashcards"}
           </Button>
