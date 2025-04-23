@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { CardContent, CardFooter } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
 export function RegisterForm() {
   const [email, setEmail] = useState("");
@@ -106,15 +107,15 @@ export function RegisterForm() {
 
   return (
     <form onSubmit={handleSubmit}>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-6 p-6">
         {errors.general && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded-md text-sm">
+          <div className="bg-red-950/20 border border-red-500/50 text-red-300 px-4 py-2 rounded-md text-sm">
             {errors.general}
           </div>
         )}
 
-        <div className="space-y-2">
-          <Label htmlFor="email" className="text-gray-700 font-medium">
+        <div className="space-y-3">
+          <Label htmlFor="email" className="text-gray-100 font-medium">
             Email
           </Label>
           <input
@@ -122,17 +123,17 @@ export function RegisterForm() {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className={`w-full px-3 py-2 bg-gray-50 border ${
-              errors.email ? "border-red-500" : "border-gray-300"
-            } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-400`}
+            className={`w-full px-3 py-2 bg-white/10 border ${
+              errors.email ? "border-red-500/50" : "border-gray-700"
+            } rounded-md focus:outline-none focus:border-blue-500 focus:ring-blue-500/20 text-gray-100 placeholder-gray-400`}
             placeholder="twój@email.com"
             disabled={isLoading}
           />
-          {errors.email && <p className="text-red-600 text-sm mt-1 font-medium">{errors.email}</p>}
+          {errors.email && <p className="text-red-300 text-sm mt-1 font-medium">{errors.email}</p>}
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="password" className="text-gray-700 font-medium">
+        <div className="space-y-3">
+          <Label htmlFor="password" className="text-gray-100 font-medium">
             Hasło
           </Label>
           <input
@@ -140,17 +141,17 @@ export function RegisterForm() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className={`w-full px-3 py-2 bg-gray-50 border ${
-              errors.password ? "border-red-500" : "border-gray-300"
-            } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-400`}
+            className={`w-full px-3 py-2 bg-white/10 border ${
+              errors.password ? "border-red-500/50" : "border-gray-700"
+            } rounded-md focus:outline-none focus:border-blue-500 focus:ring-blue-500/20 text-gray-100 placeholder-gray-400`}
             placeholder="••••••••"
             disabled={isLoading}
           />
-          {errors.password && <p className="text-red-600 text-sm mt-1 font-medium">{errors.password}</p>}
+          {errors.password && <p className="text-red-300 text-sm mt-1 font-medium">{errors.password}</p>}
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="confirmPassword" className="text-gray-700 font-medium">
+        <div className="space-y-3">
+          <Label htmlFor="confirmPassword" className="text-gray-100 font-medium">
             Potwierdź hasło
           </Label>
           <input
@@ -158,28 +159,31 @@ export function RegisterForm() {
             type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            className={`w-full px-3 py-2 bg-gray-50 border ${
-              errors.confirmPassword ? "border-red-500" : "border-gray-300"
-            } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-400`}
+            className={`w-full px-3 py-2 bg-white/10 border ${
+              errors.confirmPassword ? "border-red-500/50" : "border-gray-700"
+            } rounded-md focus:outline-none focus:border-blue-500 focus:ring-blue-500/20 text-gray-100 placeholder-gray-400`}
             placeholder="••••••••"
             disabled={isLoading}
           />
-          {errors.confirmPassword && <p className="text-red-600 text-sm mt-1 font-medium">{errors.confirmPassword}</p>}
+          {errors.confirmPassword && <p className="text-red-300 text-sm mt-1 font-medium">{errors.confirmPassword}</p>}
         </div>
       </CardContent>
 
-      <CardFooter className="flex flex-col space-y-4">
-        <Button
-          type="submit"
-          className="w-full bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white font-medium py-2"
-          disabled={isLoading}
-        >
-          {isLoading ? "Rejestracja..." : "Zarejestruj się"}
+      <CardFooter className="flex flex-col space-y-4 p-6 pt-0">
+        <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white" disabled={isLoading}>
+          {isLoading ? (
+            <>
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              Rejestracja...
+            </>
+          ) : (
+            "Zarejestruj się"
+          )}
         </Button>
 
-        <p className="text-center text-gray-600 text-sm">
+        <p className="text-center text-gray-300 text-sm">
           Masz już konto?{" "}
-          <a href="/login" className="text-blue-600 hover:text-blue-800 transition-colors font-medium">
+          <a href="/login" className="text-blue-300 hover:text-blue-200 transition-colors font-medium">
             Zaloguj się
           </a>
         </p>
