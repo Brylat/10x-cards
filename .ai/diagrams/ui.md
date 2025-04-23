@@ -1,5 +1,6 @@
 <architecture_analysis>
 Analiza modułu autentykacji:
+
 1. Komponenty:
    - RegisterForm.tsx: Formularz rejestracji, odpowiedzialny za walidację danych i przesyłanie informacji do endpointu rejestracji.
    - LoginForm.tsx: Formularz logowania, walidujący dane i wysyłający żądanie logowania do API.
@@ -15,9 +16,10 @@ Analiza modułu autentykacji:
    - Użytkownik wchodzi na stronę (np. /login), która korzysta z NonAuthLayout do renderowania odpowiedniego formularza (LoginForm).
    - Formularz wysyła dane do odpowiedniego API (login.ts), gdzie następuje weryfikacja.
    - Middleware sprawdza autentyczność i w razie sukcesu przekierowuje do chronionych zasobów (AuthLayout).
-</architecture_analysis>
+     </architecture_analysis>
 
 <mermaid_diagram>
+
 ```mermaid
 flowchart TD
     U[Użytkownik]
@@ -67,5 +69,6 @@ flowchart TD
     API_P -- "Inicjacja resetu hasła" --> MW
 
     MW -- "Dostęp do stron chronionych" --> AL
-``` 
-</mermaid_diagram> 
+```
+
+</mermaid_diagram>

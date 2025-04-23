@@ -19,6 +19,9 @@
 - **Frontend:** Astro 5, React 19, TypeScript 5, Tailwind CSS 4, Shadcn/ui
 - **Backend:** Supabase (PostgreSQL, authentication, and backend-as-a-service)
 - **AI Integration:** Openrouter.ai for connecting to various AI models
+- **Testing:**
+  - **Unit Testing:** Vitest, React Testing Library, Supabase Test Helpers
+  - **E2E Testing:** Playwright, Postman, SuperTest
 - **Additional Tools:** ESLint, Prettier, GitHub Actions for CI/CD
 
 ## Getting Started Locally
