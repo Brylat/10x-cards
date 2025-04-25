@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 import { z } from "zod";
 import { FlashcardsService } from "../../lib/services/flashcards.service";
-import { supabaseClient, DEFAULT_USER_ID } from "../../db/supabase.client";
+import { createSupabaseServerInstance } from "../../db/supabase.client";
 
 export const prerender = false;
 
@@ -18,8 +18,22 @@ const createFlashcardsSchema = z.object({
   flashcards: z.array(createFlashcardCommandSchema),
 });
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, cookies, locals }) => {
   try {
+    // Check if user is authenticated
+    if (!locals.user) {
+      return new Response(
+        JSON.stringify({
+          error: "Authentication required",
+          message: "You must be logged in to create flashcards",
+        }),
+        {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
     // Validate request body
     const body = await request.json();
     const validationResult = createFlashcardsSchema.safeParse(body);
@@ -39,9 +53,12 @@ export const POST: APIRoute = async ({ request }) => {
 
     const { flashcards } = validationResult.data;
 
+    // Initialize Supabase client with cookie handling
+    const supabase = createSupabaseServerInstance({ cookies, headers: request.headers });
+
     // Create flashcards using service
-    const flashcardsService = new FlashcardsService(supabaseClient);
-    const result = await flashcardsService.createFlashcards(flashcards, DEFAULT_USER_ID);
+    const flashcardsService = new FlashcardsService(supabase);
+    const result = await flashcardsService.createFlashcards(flashcards, locals.user.id);
 
     return new Response(JSON.stringify(result), {
       status: 201,
