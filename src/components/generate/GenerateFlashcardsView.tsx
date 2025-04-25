@@ -171,7 +171,7 @@ export function GenerateFlashcardsView() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8" data-test-id="generate-flashcards-view">
       <TextInputForm
         value={inputText}
         onChange={handleTextChange}
@@ -187,11 +187,12 @@ export function GenerateFlashcardsView() {
       />
 
       {flashcardsList.length > 0 && (
-        <div className="flex justify-end gap-4">
+        <div className="flex justify-end gap-4" data-test-id="flashcards-actions">
           <Button
             onClick={handleSaveAllFlashcards}
             disabled={flashcardsList.length === 0 || isSavingAll || isSaving}
             variant="outline"
+            data-test-id="save-all-flashcards-btn"
           >
             {isSavingAll ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <CheckSquare className="h-4 w-4 mr-2" />}
             {isSavingAll ? "Saving all..." : "Save All Flashcards"}
@@ -199,6 +200,7 @@ export function GenerateFlashcardsView() {
           <Button
             onClick={handleSaveAccepted}
             disabled={!flashcardsList.some((f) => f.accepted) || isSaving || isSavingAll}
+            data-test-id="save-accepted-flashcards-btn"
           >
             {isSaving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
             {isSaving ? "Saving..." : "Save Accepted Flashcards"}

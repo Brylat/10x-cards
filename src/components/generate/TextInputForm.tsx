@@ -26,7 +26,7 @@ export function TextInputForm({ value, onChange, onGenerate, isLoading }: TextIn
   const neededChars = MIN_LENGTH - value.length;
 
   return (
-    <Card className="border border-gray-200 bg-white/5 shadow-md">
+    <Card className="border border-gray-200 bg-white/5 shadow-md" data-test-id="text-input-card">
       <CardHeader className="pb-2">
         <CardTitle className="text-2xl font-semibold text-gray-100">Enter Your Text</CardTitle>
         <CardDescription className="text-gray-300">
@@ -40,8 +40,9 @@ export function TextInputForm({ value, onChange, onGenerate, isLoading }: TextIn
             value={value}
             onChange={handleChange}
             className="min-h-[200px] resize-y bg-white/10 border-gray-700 text-gray-100 focus:border-blue-500 focus:ring-blue-500/20"
+            data-test-id="source-text-input"
           />
-          <div className="text-sm">
+          <div className="text-sm" data-test-id="character-counter">
             {value.length < MIN_LENGTH && <span className="text-blue-300">Need {neededChars} more characters</span>}
             {value.length > MIN_LENGTH && value.length <= MAX_LENGTH && (
               <span className="text-green-300">{remainingChars} characters remaining</span>
@@ -55,6 +56,7 @@ export function TextInputForm({ value, onChange, onGenerate, isLoading }: TextIn
           onClick={onGenerate}
           disabled={!isValidLength || isLoading}
           className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+          data-test-id="generate-button"
         >
           {isLoading ? "Generating..." : "Generate Flashcards"}
         </Button>

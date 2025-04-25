@@ -1,20 +1,74 @@
-# E2E Testing Guide
+# Testy E2E dla aplikacji 10x-cards
 
-Ten katalog zawiera testy end-to-end (E2E) dla aplikacji 10x Cards, zaimplementowane zgodnie z najlepszymi praktykami Playwright.
+Ten katalog zawiera testy end-to-end napisane przy użyciu Playwright.
 
-## Struktura katalogów
+## Struktura testów
+
+Testy są zorganizowane według wzorca Page Object Model (POM), który zapewnia modularną i łatwą w utrzymaniu strukturę:
 
 ```
 e2e/
-├── fixtures/         # Fixtures i konfiguracja współdzielona przez testy
-├── page-objects/     # Implementacje Page Object Model
-├── helpers/          # Klasy pomocnicze i konteksty API
-├── auth/             # Testy dotyczące uwierzytelniania
-├── flashcards/       # Testy dotyczące fiszek
-├── examples/         # Przykładowe testy pokazujące różne funkcje Playwright
-├── app.spec.ts       # Główne testy aplikacji
-└── README.md         # Ta dokumentacja
+├── components/             # Komponenty POM dla mniejszych elementów UI
+│   ├── GenerateFlashcardsComponent.ts
+│   └── EditFlashcardModalComponent.ts
+├── pages/                  # Modele stron POM
+│   ├── BasePage.ts         # Klasa bazowa dla wszystkich stron
+│   └── GenerateFlashcardsPage.ts
+├── tests/                  # Faktyczne testy e2e
+│   └── generate-flashcards.spec.ts
+└── fixtures/               # Dane testowe i pomoce testowe
 ```
+
+## Wzorzec Page Object Model
+
+Struktura Page Object Model (POM) pozwala na:
+
+1. **Izolację logiki testów od elementów UI** - W testach odwołujemy się do metod POM, a nie bezpośrednio do selektorów
+2. **Lepszą możliwość ponownego wykorzystania kodu** - Logika interakcji z UI jest napisana raz i używana w wielu testach
+3. **Łatwiejsze utrzymanie** - Zmiana w UI wymaga aktualizacji tylko w jednym miejscu
+
+### Warstwy POM
+
+1. **BasePage** - Klasa bazowa dla wszystkich stron, zawierająca wspólne metody
+2. **Strony** - Reprezentują całe strony aplikacji, używają komponentów
+3. **Komponenty** - Reprezentują powtarzalne części interfejsu
+
+### Atrybuty testowe
+
+Wszystkie selektory używają atrybutów `data-test-id` dodanych do komponentów:
+
+```html
+<button data-test-id="save-button">Zapisz</button>
+```
+
+W POM odnosimy się do nich poprzez:
+
+```typescript
+this.saveButton = page.locator('[data-test-id="save-button"]');
+```
+
+## Uruchamianie testów
+
+Aby uruchomić testy e2e:
+
+```
+npx playwright test
+```
+
+Aby uruchomić konkretny test:
+
+```
+npx playwright test generate-flashcards
+```
+
+## Dobre praktyki
+
+1. Używaj metod Page Object zamiast bezpośrednich selektorów w testach
+2. Dodawaj komentarze do testów wyjaśniające co testujesz
+3. Grupuj powiązane testy w bloki describe
+4. Upewnij się, że testy są niezależne od siebie
+5. Używaj odpowiednich timeoutów i warunków oczekiwania
+6. Generuj zrzuty ekranu dla błędów
 
 ## Kluczowe funkcje
 
@@ -23,28 +77,6 @@ e2e/
 - **API Testing** - Zaimplementowane jest testowanie API obok testów UI
 - **Visual Testing** - Dostępne jest porównywanie wizualne dla testów regresyjnych
 - **Trace Viewer** - Zapewnia zaawansowane możliwości debugowania
-
-## Uruchamianie testów
-
-```bash
-# Uruchomienie wszystkich testów E2E
-npm run test:e2e
-
-# Uruchomienie testów z interfejsem użytkownika
-npm run test:e2e:ui
-
-# Uruchomienie testów w trybie debug
-npm run test:e2e:debug
-
-# Uruchomienie określonego testu
-npx playwright test e2e/auth/login.spec.ts
-
-# Uruchomienie testów z generowaniem trace
-npx playwright test --trace on
-
-# Przeglądanie trace
-npx playwright show-report
-```
 
 ## Najlepsze praktyki
 
