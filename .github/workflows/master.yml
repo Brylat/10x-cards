@@ -5,6 +5,13 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      debug_enabled:
+        description: 'Run the workflow with debug logging'
+        type: boolean
+        required: false
+        default: false
 
 jobs:
   lint:
@@ -46,4 +53,4 @@ jobs:
           node-version: 20
           cache: "npm"
       - run: npm ci
-      - run: npm run build
+      - run: npm run build 
