@@ -43,7 +43,7 @@ jobs:
 
   build-and-push:
     name: Build and Push Docker Image
-    needs: [lint, unit-test]
+    needs: [lint, unit-tests]
     runs-on: ubuntu-latest
     environment: production
     permissions:
