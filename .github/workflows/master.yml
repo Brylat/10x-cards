@@ -82,24 +82,9 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  manual-approval:
-    name: Manual Approval
-    needs: build-and-push
-    runs-on: ubuntu-latest
-    steps:
-      - name: Manual approval step
-        uses: trstringer/manual-approval@v1
-        with:
-          secret: ${{ secrets.GITHUB_TOKEN }}
-          approvers: ${{ github.actor }}
-          minimum-approvals: 1
-          issue-title: "Approve deployment"
-          issue-body: "Please approve or deny the deployment"
-          exclude-workflow-initiator-as-approver: false
-
   deploy:
     name: Deploy to DigitalOcean
-    needs: [build-and-push, manual-approval]
+    needs: build-and-push
     runs-on: ubuntu-latest
     environment: production
     steps:
