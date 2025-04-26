@@ -1,0 +1,150 @@
+name: Pull Request Checks
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, reopened, synchronize]
+
+jobs:
+  lint:
+    name: Lint Code
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+      - name: Install dependencies
+        run: npm ci
+      - name: Run linting
+        id: lint
+        run: npm run lint
+        continue-on-error: true
+      - name: Save lint status
+        if: always()
+        run: echo "LINT_STATUS=${{ steps.lint.outcome }}" >> $GITHUB_OUTPUT
+        id: lint-status
+
+  unit-tests:
+    name: Unit Tests
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+      - name: Install dependencies
+        run: npm ci
+      - name: Run tests with coverage
+        id: test
+        run: npm run test:coverage
+        continue-on-error: true
+      - name: Upload coverage reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: ./coverage/
+      - name: Save test status
+        if: always()
+        run: echo "TEST_STATUS=${{ steps.test.outcome }}" >> $GITHUB_OUTPUT
+        id: test-status
+
+  status-comment:
+    name: Status Comment
+    needs: [lint, unit-tests]
+    if: always()
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Get workflow run results
+        uses: actions/github-script@v7
+        id: workflow-status
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const { data: jobs } = await github.rest.actions.listJobsForWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: context.runId
+            });
+            
+            const lintJob = jobs.jobs.find(job => job.name === 'Lint Code');
+            const testJob = jobs.jobs.find(job => job.name === 'Unit Tests');
+            
+            const lintStatus = lintJob ? lintJob.conclusion : 'unknown';
+            const testStatus = testJob ? testJob.conclusion : 'unknown';
+            
+            return { 
+              lintStatus,
+              testStatus,
+              overallStatus: (lintStatus === 'success' && testStatus === 'success') ? 'success' : 'failure'
+            };
+      
+      - name: Create Comment
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            // Access workflow status from previous step
+            const status = ${{ steps.workflow-status.outputs.result }};
+            
+            // Access PR data from context
+            const pr = context.payload.pull_request;
+            
+            // Get files changed in PR
+            const { data: files } = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number
+            });
+            
+            // Create file list summary
+            const fileList = files.map(file => `- ${file.filename} (${file.status})`).join('\n');
+            
+            // Create emoji based on status
+            const statusEmoji = {
+              success: '✅',
+              failure: '❌',
+              unknown: '❓'
+            };
+            
+            // Generate overall status emoji
+            const overallEmoji = statusEmoji[status.overallStatus] || statusEmoji.unknown;
+            
+            // Generate comment text
+            const commentBody = `## Pull Request Status: ${overallEmoji}
+            
+            Hello @${pr.user.login}! This is the automated status of your pull request.
+            
+            ### Check Results
+            
+            - **Lint Check**: ${statusEmoji[status.lintStatus] || statusEmoji.unknown}
+            - **Unit Tests**: ${statusEmoji[status.testStatus] || statusEmoji.unknown}
+            
+            ### PR Info
+            
+            - Title: ${pr.title}
+            - Changed Files: ${pr.changed_files}
+            - Additions: ${pr.additions}
+            - Deletions: ${pr.deletions}
+            
+            ### Files Changed
+            
+            ${fileList}
+            
+            ${status.overallStatus === 'success' 
+              ? '🎉 All checks passed! Your code is ready for review.' 
+              : '⚠️ Some checks failed. Please fix the issues before requesting a review.'}`;
+            
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: commentBody
+            }); 
