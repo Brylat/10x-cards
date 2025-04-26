@@ -1,0 +1,51 @@
+# Dependencies
+node_modules/
+.npm/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+yarn.lock
+
+# Build outputs
+dist/
+.output/
+.astro/
+
+# Docker
+Dockerfile
+.dockerignore
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Git and GitHub
+.git/
+.github/
+.gitignore
+
+# Editor directories and files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+
+# Testing
+coverage/
+playwright-report/
+test-results/
+
+# Logs
+logs/
+*.log
+
+# Project specific
+README.md
+LICENSE
+*.md
+.ai/ 

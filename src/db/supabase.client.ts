@@ -3,8 +3,9 @@ import type { AstroCookies } from "astro";
 import { createServerClient, type CookieOptionsWithName } from "@supabase/ssr";
 import type { Database } from "./database.types";
 
-const supabaseUrl = import.meta.env.SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.SUPABASE_KEY;
+// Use runtime environment variables instead of build-time variables
+const supabaseUrl = process.env.SUPABASE_URL || import.meta.env.SUPABASE_URL;
+const supabaseAnonKey = process.env.SUPABASE_KEY || import.meta.env.SUPABASE_KEY;
 
 export const supabaseClient = createClient<Database>(supabaseUrl, supabaseAnonKey);
 
@@ -23,17 +24,21 @@ function parseCookieHeader(cookieHeader: string): { name: string; value: string 
 }
 
 export const createSupabaseServerInstance = (context: { headers: Headers; cookies: AstroCookies }) => {
-  const supabase = createServerClient<Database>(import.meta.env.SUPABASE_URL, import.meta.env.SUPABASE_KEY, {
-    cookieOptions,
-    cookies: {
-      getAll() {
-        return parseCookieHeader(context.headers.get("Cookie") ?? "");
+  const supabase = createServerClient<Database>(
+    process.env.SUPABASE_URL || import.meta.env.SUPABASE_URL,
+    process.env.SUPABASE_KEY || import.meta.env.SUPABASE_KEY,
+    {
+      cookieOptions,
+      cookies: {
+        getAll() {
+          return parseCookieHeader(context.headers.get("Cookie") ?? "");
+        },
+        setAll(cookiesToSet: { name: string; value: string; options?: CookieOptionsWithName }[]) {
+          cookiesToSet.forEach(({ name, value, options }) => context.cookies.set(name, value, options));
+        },
       },
-      setAll(cookiesToSet: { name: string; value: string; options?: CookieOptionsWithName }[]) {
-        cookiesToSet.forEach(({ name, value, options }) => context.cookies.set(name, value, options));
-      },
-    },
-  });
+    }
+  );
 
   return supabase;
 };

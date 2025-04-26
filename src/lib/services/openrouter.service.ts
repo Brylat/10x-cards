@@ -120,10 +120,13 @@ export class OpenRouterService {
   constructor(model?: string) {
     // Initialize with environment variables
     this.config = {
-      apiKey: import.meta.env.OPENROUTER_API_KEY,
-      baseUrl: import.meta.env.OPENROUTER_API_URL || "https://openrouter.ai/api/v1",
-      defaultModel: model || import.meta.env.OPENROUTER_DEFAULT_MODEL || "gpt-4",
-      maxRequestsPerMinute: Number(import.meta.env.OPENROUTER_MAX_REQUESTS_PER_MINUTE) || 60,
+      apiKey: process.env.OPENROUTER_API_KEY || import.meta.env.OPENROUTER_API_KEY,
+      baseUrl: process.env.OPENROUTER_API_URL || import.meta.env.OPENROUTER_API_URL || "https://openrouter.ai/api/v1",
+      defaultModel:
+        model || process.env.OPENROUTER_DEFAULT_MODEL || import.meta.env.OPENROUTER_DEFAULT_MODEL || "gpt-4",
+      maxRequestsPerMinute:
+        Number(process.env.OPENROUTER_MAX_REQUESTS_PER_MINUTE || import.meta.env.OPENROUTER_MAX_REQUESTS_PER_MINUTE) ||
+        60,
     };
 
     if (!this.config.apiKey) {
@@ -148,7 +151,7 @@ export class OpenRouterService {
       const headers = {
         Authorization: `Bearer ${this.config.apiKey}`,
         "Content-Type": "application/json",
-        "HTTP-Referer": import.meta.env.PUBLIC_SITE_URL || "http://localhost:3000",
+        "HTTP-Referer": process.env.PUBLIC_SITE_URL || import.meta.env.PUBLIC_SITE_URL || "http://localhost:3000",
       };
 
       const controller = new AbortController();
