@@ -1,0 +1,23 @@
+---
+import NonAuthLayout from "../layouts/NonAuthLayout.astro";
+import { createSupabaseServerInstance } from "../db/supabase.client";
+
+// Check if user is authenticated and redirect accordingly
+const supabase = createSupabaseServerInstance({
+  cookies: Astro.cookies,
+  headers: Astro.request.headers,
+});
+
+const {
+  data: { user },
+} = await supabase.auth.getUser();
+
+// Redirect based on authentication status
+if (user) {
+  return Astro.redirect("/generate");
+} else {
+  return Astro.redirect("/login");
+}
+---
+
+<NonAuthLayout />
