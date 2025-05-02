@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { LogOut } from "lucide-react";
+import { LogOut, BookOpen, Sparkles } from "lucide-react";
 
 export function TopMenu() {
   const [currentPath, setCurrentPath] = useState("/");
@@ -55,7 +55,22 @@ export function TopMenu() {
                 currentPath === "/generate" ? "bg-blue-800 text-white" : "text-blue-100"
               }`}
             >
-              <a href="/generate">Generate Flashcards</a>
+              <a href="/generate">
+                <Sparkles className="size-4 mr-1 opacity-70" />
+                Generate Flashcards
+              </a>
+            </Button>
+            <Button
+              variant={currentPath === "/flashcards" ? "default" : "ghost"}
+              asChild
+              className={`text-base hover:text-white hover:bg-blue-900/40 focus-visible:bg-blue-900/40 focus-visible:text-white ${
+                currentPath === "/flashcards" ? "bg-blue-800 text-white" : "text-blue-100"
+              }`}
+            >
+              <a href="/flashcards">
+                <BookOpen className="size-4 mr-1 opacity-70" />
+                My Flashcards
+              </a>
             </Button>
           </div>
 

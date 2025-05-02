@@ -1,0 +1,25 @@
+---
+import AuthLayout from "../layouts/AuthLayout.astro";
+import { FlashcardsList } from "../components/flashcards/FlashcardsList";
+
+// Disable prerendering - render on server
+export const prerender = false;
+
+// Redirect to login if user is not authenticated
+if (!Astro.locals.user) {
+  return Astro.redirect("/login");
+}
+---
+
+<AuthLayout title="My Flashcards - 10x Cards">
+  <div class="container py-8">
+    <div class="mb-6">
+      <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-300 to-blue-100 text-transparent bg-clip-text">
+        My Flashcards
+      </h1>
+      <p class="text-muted-foreground mt-2">View and manage all your flashcards in one place</p>
+    </div>
+
+    <FlashcardsList client:load />
+  </div>
+</AuthLayout>
